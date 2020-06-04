@@ -1,25 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { CssBaseline } from "@material-ui/core";
+
+import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
+import Protected from "./components/Protected";
+import { setAuthenticated } from "./data/auth";
+import PrivateRoute from "./components/hoc/PrivateRoute";
 
 function App() {
+  const dispatch = useDispatch();
+  const user = localStorage.getItem("user");
+
+  useEffect(() => {
+    if (user) {
+      dispatch(setAuthenticated());
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <CssBaseline />
+      <Router>
+        <Switch>
+          <Route exact path="/" component={LoginForm} />
+          <Route path="/signup" component={SignupForm} />
+          <PrivateRoute path="/secret">
+            <Protected />
+          </PrivateRoute>
+        </Switch>
+      </Router>
+    </>
   );
 }
 
